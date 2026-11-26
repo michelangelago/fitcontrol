@@ -21,6 +21,22 @@ unset personal_password
 
 Abra [Fitcontrol local](http://127.0.0.1:8000). Use `docker compose down` para parar a aplicação. O volume mantém os dados entre execuções. Use a mesma senha do MySQL ao reiniciar com o volume existente.
 
+## Dados de demonstração
+
+Ao importar o esquema em um banco novo, o Fitcontrol cria cinco alunos, cinco exercícios, cinco fichas, cinco itens de treino e cinco mensalidades. A tabela `users` recebe seis contas, uma para cada aluno e outra para o Personal.
+
+- **Personal** usa `personal@fitcontrol.test`.
+- **Aluno** pode usar `ana@fitcontrol.test`.
+- A senha das contas de demonstração é `FitcontrolDemo2026!`. Use essas contas apenas em ambiente local.
+
+Para importar somente as tabelas em um banco novo, execute o esquema com `@fitcontrol_demo` desativado na mesma sessão:
+
+```bash
+{ printf 'SET @fitcontrol_demo = 0;\n'; cat database/schema.sql; } | mysql -u root -p fitcontrol
+```
+
+O [relatório simplificado](docs/Relatorio-Simplificado-Fitcontrol.pdf) reúne o diagrama do banco e as capturas do sistema com esses dados.
+
 ## Instalação local sem Docker
 
 Requisitos: PHP 8.2 ou superior com `pdo_mysql` habilitado e MySQL 8.0.16 ou superior.
