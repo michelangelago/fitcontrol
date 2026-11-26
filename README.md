@@ -2,7 +2,26 @@
 
 Aplicação em PHP para personal trainers e academias de estúdio acompanharem alunos, fichas de treino e mensalidades.
 
-## Instalação local
+## Executar com Docker
+
+O Docker Compose lê `DB_PASSWORD` do arquivo `.env` e usa a mesma senha na aplicação e no MySQL. Se você ainda não tem um `.env`, copie `.env.example` para `.env` e substitua o valor de exemplo por uma senha forte. Em seguida, suba os serviços:
+
+```bash
+docker compose up --build -d
+```
+
+Na primeira execução, o MySQL importa o esquema automaticamente. Crie a conta do Personal:
+
+```bash
+read -rsp 'Senha do Personal: ' personal_password
+printf '\n'
+printf '%s\n' "$personal_password" | docker compose exec -T app php bin/create-personal.php 'Nome do Personal' personal@example.com
+unset personal_password
+```
+
+Abra [Fitcontrol local](http://127.0.0.1:8000). Use `docker compose down` para parar a aplicação. O volume mantém os dados entre execuções. Use a mesma senha do MySQL ao reiniciar com o volume existente.
+
+## Instalação local sem Docker
 
 Requisitos: PHP 8.2 ou superior com `pdo_mysql` habilitado e MySQL 8.0.16 ou superior.
 
