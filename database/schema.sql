@@ -1,0 +1,59 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(190) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('personal','aluno') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS students (
+    id INT UNSIGNED PRIMARY KEY,
+    personal_id INT UNSIGNED NOT NULL,
+    phone VARCHAR(40) NOT NULL DEFAULT '',
+    birth_date DATE NULL,
+    anamnesis TEXT NOT NULL,
+    due_day TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (personal_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS exercises (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    personal_id INT UNSIGNED NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    muscle_group VARCHAR(100) NOT NULL,
+    video_url VARCHAR(500) NOT NULL DEFAULT '',
+    FOREIGN KEY (personal_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS workouts (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id INT UNSIGNED NOT NULL,
+    title VARCHAR(120) NOT NULL,
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    active_student_id INT UNSIGNED NULL UNIQUE,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS workout_items (
+    workout_id INT UNSIGNED NOT NULL,
+    position INT UNSIGNED NOT NULL,
+    series ENUM('A','B','C') NOT NULL,
+    exercise_id INT UNSIGNED NOT NULL,
+    sets SMALLINT UNSIGNED NOT NULL,
+    reps VARCHAR(40) NOT NULL,
+    PRIMARY KEY (workout_id, position),
+    FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE,
+    FOREIGN KEY (exercise_id) REFERENCES exercises(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS payments (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id INT UNSIGNED NOT NULL,
+    reference_month DATE NOT NULL,
+    due_date DATE NOT NULL,
+    amount DECIMAL(10,2) UNSIGNED NOT NULL,
+    paid_on DATE NULL,
+    UNIQUE (student_id, reference_month),
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
